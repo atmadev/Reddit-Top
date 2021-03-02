@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+
 struct Response: Codable {
   let data: Data
   
@@ -36,7 +37,7 @@ struct PostService: Codable {
     let commentsCount: Int
     let subreddit: String
     let author: String
-    let preview: Preview
+    let preview: Preview?
     
     enum CodingKeys: String, CodingKey {
       case id
@@ -66,13 +67,9 @@ struct ImageResolution: Codable {
   let width: Int
   let height: Int
   
-  var k: CGFloat {
-    CGFloat(width) / CGFloat(height)
-  }
+  var k: CGFloat { CGFloat(width) / CGFloat(height) }
   
-  var isPortrait: Bool {
-    height > width
-  }
+  var isPortrait: Bool { height > width }
 }
 
 struct Post {
@@ -97,8 +94,9 @@ struct Post {
     self.subreddit = from.subreddit
     self.author = from.author
     
-    if from.preview.images.count > 0 {
-      let image = from.preview.images.first!
+    if let preview = from.preview,
+       preview.images.count > 0 {
+      let image = preview.images.first!
       let thumbnail = image.resolutions.count > 4 ?
         image.resolutions[3] : // It is about 640 width
         image.resolutions.last!

@@ -7,21 +7,17 @@
 
 import UIKit
 
+// TODO: set this class for full screen image view
 class ImageView: UIImageView {
-  @IBOutlet var heightConstraint: NSLayoutConstraint?
-  
   var imageResolution: ImageResolution? {
     didSet {
-      self.image = nil
-      guard imageResolution != nil else {
-        heightConstraint?.constant = 0
-        return
-      }
+      if (oldValue?.url == imageResolution?.url) { return }
       
-      heightConstraint?.constant = CGFloat(imageResolution!.height) / 1.8
-      let downloadingResolution = imageResolution
-      API.shared.downloadData(at: imageResolution!.url) { data in
-        if downloadingResolution?.url == self.imageResolution?.url {
+      image = nil
+      guard let resolution = imageResolution else { return }
+      
+      API.shared.downloadData(at: resolution.url) { data in
+        if resolution.url == self.imageResolution?.url {
           self.image = UIImage(data: data)
         }
       }

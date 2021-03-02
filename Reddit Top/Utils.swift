@@ -5,13 +5,13 @@
 //  Created by Alexander Koryttsev on 28.02.2021.
 //
 
-import Foundation
+import UIKit
 
 extension Date {
   var hoursAgo: String {
     let interval = Int(Date().timeIntervalSince(self))
     let hours = interval / 3600
-    return "\(hours) hours ago"
+    return "\(hours) hour\(hours == 1 ? "" : "s") ago"
   }
 }
 
@@ -28,4 +28,17 @@ extension Int {
     
     return string
   }
+}
+
+extension UITraitEnvironment {
+  var isHeightCompact: Bool { traitCollection.isHeightCompact }
+}
+
+extension UITraitCollection {
+  var isHeightCompact: Bool { verticalSizeClass == .compact }
+}
+
+extension UIScreen {
+  static var width: CGFloat { main.bounds.width }
+  static var height: CGFloat { main.bounds.height }
 }
