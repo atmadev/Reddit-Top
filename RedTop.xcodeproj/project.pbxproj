@@ -29,7 +29,7 @@
 		96C4C8ED25EBC42900F6B755 /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
 		96C4C8F825EBF0E400F6B755 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		96C4C8FB25EBF3D400F6B755 /* ImageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageVC.swift; sourceTree = "<group>"; };
-		96E87D2125EB89C5004892E0 /* Reddit Top.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Reddit Top.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		96E87D2125EB89C5004892E0 /* RedTop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RedTop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96E87D2425EB89C5004892E0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		96E87D2625EB89C5004892E0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		96E87D2B25EB89C5004892E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -49,6 +49,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9603813E25F0C3EB004F942A /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				96BDE0EA25EBB01E0020C41D /* TopListVC.swift */,
+				96C4C8FB25EBF3D400F6B755 /* ImageVC.swift */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		9603813F25F0C445004F942A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				96E87D2D25EB89C5004892E0 /* Assets.xcassets */,
+				96E87D2F25EB89C5004892E0 /* LaunchScreen.storyboard */,
+				96E87D2A25EB89C5004892E0 /* Main.storyboard */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		96BDE0F025EBBF890020C41D /* RemoteService */ = {
 			isa = PBXGroup;
 			children = (
@@ -70,7 +89,7 @@
 		96E87D1825EB89C5004892E0 = {
 			isa = PBXGroup;
 			children = (
-				96E87D2325EB89C5004892E0 /* Reddit Top */,
+				96E87D2325EB89C5004892E0 /* RedTop */,
 				96E87D2225EB89C5004892E0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,35 +97,32 @@
 		96E87D2225EB89C5004892E0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				96E87D2125EB89C5004892E0 /* Reddit Top.app */,
+				96E87D2125EB89C5004892E0 /* RedTop.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		96E87D2325EB89C5004892E0 /* Reddit Top */ = {
+		96E87D2325EB89C5004892E0 /* RedTop */ = {
 			isa = PBXGroup;
 			children = (
 				96E87D2425EB89C5004892E0 /* AppDelegate.swift */,
-				96BDE0F025EBBF890020C41D /* RemoteService */,
 				96E87D2625EB89C5004892E0 /* SceneDelegate.swift */,
-				96E87D2A25EB89C5004892E0 /* Main.storyboard */,
-				96BDE0EA25EBB01E0020C41D /* TopListVC.swift */,
 				96C4C8F825EBF0E400F6B755 /* Utils.swift */,
-				96C4C8FB25EBF3D400F6B755 /* ImageVC.swift */,
+				96BDE0F025EBBF890020C41D /* RemoteService */,
+				9603813E25F0C3EB004F942A /* Screens */,
 				96C4C8EC25EBC41600F6B755 /* Components */,
-				96E87D2D25EB89C5004892E0 /* Assets.xcassets */,
-				96E87D2F25EB89C5004892E0 /* LaunchScreen.storyboard */,
+				9603813F25F0C445004F942A /* Resources */,
 				96E87D3225EB89C5004892E0 /* Info.plist */,
 			);
-			path = "Reddit Top";
+			path = RedTop;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		96E87D2025EB89C5004892E0 /* Reddit Top */ = {
+		96E87D2025EB89C5004892E0 /* RedTop */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 96E87D3525EB89C5004892E0 /* Build configuration list for PBXNativeTarget "Reddit Top" */;
+			buildConfigurationList = 96E87D3525EB89C5004892E0 /* Build configuration list for PBXNativeTarget "RedTop" */;
 			buildPhases = (
 				96E87D1D25EB89C5004892E0 /* Sources */,
 				96E87D1E25EB89C5004892E0 /* Frameworks */,
@@ -116,9 +132,9 @@
 			);
 			dependencies = (
 			);
-			name = "Reddit Top";
+			name = RedTop;
 			productName = "Reddit Top";
-			productReference = 96E87D2125EB89C5004892E0 /* Reddit Top.app */;
+			productReference = 96E87D2125EB89C5004892E0 /* RedTop.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -135,7 +151,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 96E87D1C25EB89C5004892E0 /* Build configuration list for PBXProject "Reddit Top" */;
+			buildConfigurationList = 96E87D1C25EB89C5004892E0 /* Build configuration list for PBXProject "RedTop" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -148,7 +164,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				96E87D2025EB89C5004892E0 /* Reddit Top */,
+				96E87D2025EB89C5004892E0 /* RedTop */,
 			);
 		};
 /* End PBXProject section */
@@ -328,7 +344,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Q5BCCLALJ5;
-				INFOPLIST_FILE = "Reddit Top/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/RedTop/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -347,7 +363,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Q5BCCLALJ5;
-				INFOPLIST_FILE = "Reddit Top/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/RedTop/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -362,7 +378,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		96E87D1C25EB89C5004892E0 /* Build configuration list for PBXProject "Reddit Top" */ = {
+		96E87D1C25EB89C5004892E0 /* Build configuration list for PBXProject "RedTop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				96E87D3325EB89C5004892E0 /* Debug */,
@@ -371,7 +387,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		96E87D3525EB89C5004892E0 /* Build configuration list for PBXNativeTarget "Reddit Top" */ = {
+		96E87D3525EB89C5004892E0 /* Build configuration list for PBXNativeTarget "RedTop" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				96E87D3625EB89C5004892E0 /* Debug */,

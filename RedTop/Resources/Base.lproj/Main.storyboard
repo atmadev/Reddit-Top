@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="okO-Tj-1uJ">
-    <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -8,17 +7,17 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Reddit Top-->
+        <!--RedTop-->
         <scene sceneID="rzb-0C-g3C">
             <objects>
                 <tableViewController id="hwJ-Ed-Ncf" customClass="TopListVC" customModule="Reddit_Top" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="PUn-K6-aAn">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemGray6Color"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="yXR-Yq-YH7" customClass="PostCell" customModule="Reddit_Top" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="320" height="182.5"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="182.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="yXR-Yq-YH7" id="hMx-Lh-jZb">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="182.5"/>
@@ -200,7 +199,7 @@
                             <outlet property="delegate" destination="hwJ-Ed-Ncf" id="uMR-L6-Lhv"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Reddit Top" largeTitleDisplayMode="never" id="V2G-h0-2Tz"/>
+                    <navigationItem key="navigationItem" title="RedTop" largeTitleDisplayMode="never" id="V2G-h0-2Tz"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Me2-yX-56p" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -211,11 +210,11 @@
             <objects>
                 <viewController storyboardIdentifier="ImageVC" title="ImageVC" extendedLayoutIncludesOpaqueBars="YES" modalPresentationStyle="fullScreen" useStoryboardIdentifierAsRestorationIdentifier="YES" id="CdZ-Pf-8v1" customClass="ImageVC" customModule="Reddit_Top" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="pFa-jq-htT">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" maximumZoomScale="4" translatesAutoresizingMaskIntoConstraints="NO" id="vZ4-oI-TUe">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" placeholderIntrinsicWidth="320" placeholderIntrinsicHeight="568" translatesAutoresizingMaskIntoConstraints="NO" id="UUr-Ed-SPJ">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
