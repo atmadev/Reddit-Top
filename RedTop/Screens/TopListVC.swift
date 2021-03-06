@@ -18,9 +18,13 @@ class TopListVC: UITableViewController {
     inset.bottom += 5
     tableView.contentInset = inset
     
-    API.shared.fetchTop(after:"") {
-      self.posts = $0
-      self.tableView.reloadData()
+    API.shared.authorize { (success) in
+      if success {
+        API.shared.fetchTop(after:"") {
+          self.posts = $0
+          self.tableView.reloadData()
+        }
+      }
     }
   }
   

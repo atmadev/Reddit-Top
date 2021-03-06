@@ -42,3 +42,13 @@ extension UIScreen {
   static var width: CGFloat { main.bounds.width }
   static var height: CGFloat { main.bounds.height }
 }
+
+class RedError: NSError {
+  init(message: String) {
+    super.init(domain: "redtop", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+}

@@ -12,81 +12,106 @@ import UIKit
 class API {
   static let shared = API()
   
+  private let username = "BeginningStand2574"
+  private let password = "RedTop"
+  private let clientID = "KfOzuW_XUbzJyA"
+  private let secret = "hBPtda6RwnFj9F4AmU8urSB-cE6DUg"
+  private let baseURLString = "https://oauth.reddit.com/"
+  
   private let decoder = JSONDecoder()
-  private let session = URLSession(configuration: .default, delegate: SessionDelegate.shared, delegateQueue: nil)
+  private let session = URLSession(configuration: .default)
+  private var token: Token!
+  
+  private enum Method: String {
+    case get = "GET"
+    case post = "POST"
+  }
+  
+  private enum Path: String {
+    case top = "top"
+  }
   
   init() {
     decoder.dateDecodingStrategy = .secondsSince1970
   }
   
-  func authorize() {
-    return
-      let url = URL(string: "https://www.reddit.com/api/v1/access_token")! // TODO: make url constant
+  func authorize(completion: @escaping (_ success: Bool) -> Void) {
+    let url = URL(string: "https://ssl.reddit.com/api/v1/access_token")! // TODO: make url constant
     var request = URLRequest(url: url)
-    let bodyString = "grant_type=https://oauth.reddit.com/grants/installed_client&device_id=DO_NOT_TRACK_THIS_DEVICE"
-    request.httpBody = bodyString.data(using: .utf8)
-    print("body \(bodyString)")
-      
-    request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-    request.setValue("Basic dnlEOGpQWTd5U1F0TXc6", forHTTPHeaderField: "Authorization")
-    request.httpMethod = "POST"
+    let params = "grant_type=password&username=" + username + "&password=" + password
+    request.httpBody = params.data(using: .utf8)
     
-      let task = URLSession.shared.dataTask(with: request) { data, response, error in
-          if let error = error {
-              self.handleClientError(error)
-              return
-          }
-          guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
-              self.handleServerError(response)
-              return
-          }
-          if let mimeType = httpResponse.mimeType, mimeType == "application/json",
-              let data = data {
-            
-            print("response \(String(data: data, encoding: .utf8) ?? "")")
+    let basicAuthenticationChallenge = clientID + ":" + secret
+    
+    guard let data = basicAuthenticationChallenge.data(using: .utf8) else { return }
+      let base64Str = data.base64EncodedString(options: .lineLength64Characters)
+    
+    request.setValue("Basic " + base64Str, forHTTPHeaderField: "Authorization")
+    request.httpMethod = Method.post.rawValue
+    
+    run(request, type: Token.self) { (token) in
+      self.token = token
+      completion(true)
+    } failed: { (error) in
+      completion(false)
+    }
+  }
+  
+  private func request(for path: Path, method: Method) -> URLRequest {
+    let url = URL(string: baseURLString + path.rawValue + ".json")!
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = method.rawValue
+    request.setValue(token.type + " " + token.access, forHTTPHeaderField: "Authorization")
+    return request
+  }
+  
+  private func run<T:Codable>(_ request: URLRequest, type: T.Type, completed: @escaping (T) -> Void, failed: @escaping (Error) -> Void) {
+    let task = session.dataTask(with: request) { data, response, error in
+        if let error = error {
+          self.handleClientError(error)
+          failed(error)
+          return
         }
-      }
-      task.resume()
+      
+        guard let httpResponse = response as? HTTPURLResponse,
+            (200...299).contains(httpResponse.statusCode) else {
+            self.handleServerError(response)
+          failed(RedError(message: "Bad response"))
+          return
+        }
+      
+        if let mimeType = httpResponse.mimeType, mimeType == "application/json",
+            let data = data {
+          do {
+            let result = try self.decoder.decode(type, from:data)
+            
+           completed(result)
+          }
+          catch {
+            print(error)
+            failed(error)
+          }
+        }
+        else {
+          failed(RedError(message: "Response is not JSON"))
+        }
+    }
+    task.resume()
   }
   
   func fetchTop(after: String, _ completion: @escaping (_ posts: [Post]) -> Void) {
+    let request = self.request(for: .top, method: .get)
     
-      let url = URL(string: "https://www.oauth.reddit.com/top.json")! // TODO: make url constant
-    
-  var request = URLRequest(url: url)
-    request.httpMethod = "GET"
-    request.setValue("Bearer -9N5GdDl--UyzCYwYG_dnfIw8M_Tv1g", forHTTPHeaderField: "Authorization")
-    
-      let task = session.dataTask(with: request) { data, response, error in
-        print("data: \(data != nil ? String(data:data!, encoding: .utf8) : "")\n response \(response)\nerror \(error)")
-          if let error = error {
-              self.handleClientError(error)
-              return
-          }
-          guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
-              self.handleServerError(response)
-              return
-          }
-          if let mimeType = httpResponse.mimeType, mimeType == "application/json",
-              let data = data {
-            
-            print("response \(String(data: data, encoding: .utf8) ?? "")")
-            
-            do {
-              let myResponse = try self.decoder.decode(Response.self, from:data)
-              let posts = myResponse.data.children.map{ Post(from: $0.data) }
-              DispatchQueue.main.async {
-                completion(posts)
-              }
-            }
-            catch {
-              print(error)
-            }
+    run(request, type:Response.self) { (response) in
+        let posts = response.data.children.map{ Post(from: $0.data) }
+        DispatchQueue.main.async {
+          completion(posts)
         }
-      }
-      task.resume()
+     
+    } failed: { (error) in
+      //TODO: handle error
+    }
   }
   
   func downloadData(at url: URL, _ completion: @escaping (_ data: Data) -> Void) {
@@ -129,27 +154,5 @@ class API {
   
   func handleServerError(_ response: URLResponse?) {
     print("server error \(String(describing: response))")
-    
-  }
-}
-
-
-class SessionDelegate: NSObject, URLSessionDelegate {
-  static let shared = SessionDelegate()
-  
-  func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-
-    let method = challenge.protectionSpace.authenticationMethod
-            let host = challenge.protectionSpace.host
-
-            switch (method, host) {
-            case (NSURLAuthenticationMethodServerTrust, "www.oauth.reddit.com"):
-                let trust = challenge.protectionSpace.serverTrust!
-                let credential = URLCredential(trust: trust)
-                completionHandler(.useCredential, credential)
-            default:
-                completionHandler(.performDefaultHandling, nil)
-            }
-    
   }
 }

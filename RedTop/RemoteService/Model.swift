@@ -9,6 +9,16 @@ import Foundation
 import UIKit
 
 
+struct Token: Codable {
+  let access: String
+  let type: String
+  
+  enum CodingKeys: String, CodingKey {
+    case access = "access_token"
+    case type = "token_type"
+  }
+}
+
 struct Response: Codable {
   let data: Data
   
