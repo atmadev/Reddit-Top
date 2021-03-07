@@ -11,6 +11,10 @@ class TopListVC: UITableViewController {
   
   var posts: [Post] = []
   
+  var lastPost: Post? { posts.count > 0 ? posts[posts.count - 1] : nil }
+  var lastFetchedID = ""
+  var after = ""
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     var inset = tableView.contentInset
@@ -19,14 +23,32 @@ class TopListVC: UITableViewController {
     tableView.contentInset = inset
     
     API.shared.authorize { (success) in
-      if success {
-        API.shared.fetchTop(after:"") {
-          self.posts = $0
-          self.tableView.reloadData()
-        }
-      }
+      if success { self.fetch() }
+      
+      self.refreshControl = UIRefreshControl()
+      self.refreshControl?.addTarget(self, action: #selector(self.refresh), for: .valueChanged)
     }
   }
+  
+  func fetch(after: String? = nil, completion: @escaping () -> Void = {}) {
+    API.shared.fetchTop(after:after) { (posts, nextAfter) in
+      if after == nil {
+        self.posts = posts
+      }
+      else {
+        self.posts.append(contentsOf: posts)
+      }
+      self.after = nextAfter
+      self.tableView.reloadData()
+      completion()
+    }
+  }
+  
+  @objc func refresh() {
+    fetch { self.refreshControl?.endRefreshing() }
+  }
+  
+  // MARK: Table View Protocol
   
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return posts.count
@@ -68,6 +90,17 @@ class TopListVC: UITableViewController {
     return ceil(height)
   }
   
+  override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    if posts.count - indexPath.row < 5 && lastFetchedID != lastPost!.id {
+      print("fetch after " + lastPost!.id)
+      lastFetchedID = lastPost!.id
+      
+      fetch(after: after)
+    }
+  }
+  
+  // MARK: Segues
+  
   override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
     if let selectedRow = tableView.indexPathForSelectedRow {
       let post = posts[selectedRow.row]
@@ -81,13 +114,15 @@ class TopListVC: UITableViewController {
       let post = posts[selectedRow.row]
       let imageVC = segue.destination as! ImageVC
       imageVC.resolution = post.image!.source
+      imageVC.title = "r/" + post.subreddit
     }
   }
   
   @IBAction func unwindToList(_ unwindSegue: UIStoryboardSegue) {}
 
+  // MARK: Trait Collections
+  
   var lastVisibleIndexPath: IndexPath?
-  var offsetK: CGFloat = 0
   
   override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
     super.willTransition(to: newCollection, with: coordinator)
@@ -95,7 +130,7 @@ class TopListVC: UITableViewController {
     if let visibleRows = tableView.indexPathsForVisibleRows,
        visibleRows.count > 0 {
       
-      let (_, maxVisibleIndexPath) = visibleRows.reduce((height:0, indexPath:visibleRows.first!)) { (maxHeight, indexPath) -> (CGFloat, IndexPath) in
+      let (_, maxVisibleIndexPath) = visibleRows.reduce((maxHeightValue:0, maxHeightIndexPath:visibleRows.first!)) { (maxHeight, indexPath) -> (CGFloat, IndexPath) in
         
         let intersection = self.tableView.rectForRow(at: indexPath).intersection(self.tableView.bounds)
         
@@ -107,9 +142,7 @@ class TopListVC: UITableViewController {
       }
       
       lastVisibleIndexPath = maxVisibleIndexPath
-      
     }
-    
   }
   
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -122,6 +155,4 @@ class TopListVC: UITableViewController {
       }
     }
   }
-  
-
 }

@@ -49,68 +49,11 @@ class API {
     request.setValue("Basic " + base64Str, forHTTPHeaderField: "Authorization")
     request.httpMethod = Method.post.rawValue
     
-    run(request, type: Token.self) { (token) in
+    run(request, Token.self) { (token) in
       self.token = token
       completion(true)
     } failed: { (error) in
       completion(false)
-    }
-  }
-  
-  private func request(for path: Path, method: Method) -> URLRequest {
-    let url = URL(string: baseURLString + path.rawValue + ".json")!
-    
-    var request = URLRequest(url: url)
-    request.httpMethod = method.rawValue
-    request.setValue(token.type + " " + token.access, forHTTPHeaderField: "Authorization")
-    return request
-  }
-  
-  private func run<T:Codable>(_ request: URLRequest, type: T.Type, completed: @escaping (T) -> Void, failed: @escaping (Error) -> Void) {
-    let task = session.dataTask(with: request) { data, response, error in
-        if let error = error {
-          self.handleClientError(error)
-          failed(error)
-          return
-        }
-      
-        guard let httpResponse = response as? HTTPURLResponse,
-            (200...299).contains(httpResponse.statusCode) else {
-            self.handleServerError(response)
-          failed(RedError(message: "Bad response"))
-          return
-        }
-      
-        if let mimeType = httpResponse.mimeType, mimeType == "application/json",
-            let data = data {
-          do {
-            let result = try self.decoder.decode(type, from:data)
-            
-           completed(result)
-          }
-          catch {
-            print(error)
-            failed(error)
-          }
-        }
-        else {
-          failed(RedError(message: "Response is not JSON"))
-        }
-    }
-    task.resume()
-  }
-  
-  func fetchTop(after: String, _ completion: @escaping (_ posts: [Post]) -> Void) {
-    let request = self.request(for: .top, method: .get)
-    
-    run(request, type:Response.self) { (response) in
-        let posts = response.data.children.map{ Post(from: $0.data) }
-        DispatchQueue.main.async {
-          completion(posts)
-        }
-     
-    } failed: { (error) in
-      //TODO: handle error
     }
   }
   
@@ -148,11 +91,73 @@ class API {
     task.resume()
   }
   
+  private func request(for path: Path, method: Method, params: [String:String]? = nil) -> URLRequest {
+    let paramString = params != nil ? ("?" + params!.urlParams) : ""
+    
+    let url = URL(string: baseURLString + path.rawValue + ".json" + paramString)!
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = method.rawValue
+    request.setValue(token.type + " " + token.access, forHTTPHeaderField: "Authorization")
+    return request
+  }
+  
+  private func run<T:Codable>(_ request: URLRequest,
+                                 _ type: T.Type,
+                              completed: @escaping (T) -> Void,
+                                 failed: @escaping (Error) -> Void) {
+    
+    let task = session.dataTask(with: request) { data, response, error in
+        if let error = error {
+          self.handleClientError(error)
+          DispatchQueue.main.async { failed(error) }
+          return
+        }
+      
+        guard let httpResponse = response as? HTTPURLResponse,
+            (200...299).contains(httpResponse.statusCode) else {
+            self.handleServerError(response)
+          
+          DispatchQueue.main.async { failed(RedError(message: "Bad response")) }
+          return
+        }
+      
+        if let mimeType = httpResponse.mimeType, mimeType == "application/json",
+            let data = data {
+          do {
+            let result = try self.decoder.decode(type, from:data)
+            DispatchQueue.main.async { completed(result) }
+            
+          }
+          catch {
+            print(error)
+            DispatchQueue.main.async { failed(error) }
+          }
+        }
+        else {
+          DispatchQueue.main.async { failed(RedError(message: "Response is not JSON")) }
+        }
+    }
+    task.resume()
+  }
+  
   func handleClientError(_ error: Error) {
     print("client error \(error)")
   }
   
   func handleServerError(_ response: URLResponse?) {
     print("server error \(String(describing: response))")
+  }
+  
+  func fetchTop(after: String? = nil, _ completion: @escaping (_ posts: [Post], _ after: String) -> Void) {
+    let request = self.request(for: .top, method: .get, params: after != nil ? [ "after": after! ] : nil)
+    
+    run(request, Response.self) { (response) in
+        let posts = response.data.children.map{ Post(from: $0.data) }
+        completion(posts, response.data.after)
+     
+    } failed: { (error) in
+      //TODO: handle error
+    }
   }
 }

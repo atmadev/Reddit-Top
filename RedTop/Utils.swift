@@ -52,3 +52,9 @@ class RedError: NSError {
     fatalError("init(coder:) has not been implemented")
   }
 }
+
+extension Dictionary where Key == String, Value == String {
+  var urlParams: String {
+    map { "\($0)=\($1)" }.joined(separator: "&")
+  }
+}
