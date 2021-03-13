@@ -21,6 +21,7 @@ class API {
   private let decoder = JSONDecoder()
   private let session = URLSession(configuration: .default)
   private var token: Token!
+  var authorized: Bool { token != nil}
   
   private enum Method: String {
     case get = "GET"

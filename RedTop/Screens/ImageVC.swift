@@ -95,7 +95,6 @@ class ImageVC: UIViewController, UIScrollViewDelegate {
     UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
   }
 
-     //MARK: - Add image to Library
   @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
          if let error = error {
              // we got back an error!
@@ -119,5 +118,21 @@ class ImageVC: UIViewController, UIScrollViewDelegate {
       self.topBar.isHidden = !self.topBar.isHidden
       self.topBarBackground.isHidden = self.topBar.isHidden
     }
+  }
+  
+  //MARK: State preservation
+  
+  override func encodeRestorableState(with coder: NSCoder) {
+    super.encodeRestorableState(with: coder)
+    
+    coder.encode(title, forKey: "Title")
+    coder.encode(resolution.json, forKey: "Resolution")
+  }
+  
+  override func decodeRestorableState(with coder: NSCoder) {
+    super.decodeRestorableState(with: coder)
+    
+    title = coder.decodeObject(forKey: "Title") as? String
+    resolution = try! coder.decode(ImageResolution.self, for: "Resolution")
   }
 }

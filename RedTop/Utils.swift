@@ -58,3 +58,24 @@ extension Dictionary where Key == String, Value == String {
     map { "\($0)=\($1)" }.joined(separator: "&")
   }
 }
+
+extension Encodable {
+  var json: Data {
+    let encoder = JSONEncoder()
+    return try! encoder.encode(self)
+  }
+}
+
+extension Decodable {
+  static func decode(from data: Data) -> Self {
+    let decoder = JSONDecoder()
+    return try! decoder.decode(Self.self, from: data)
+  }
+}
+
+extension NSCoder {
+  func decode<T>(_ type: T.Type, for key: String) throws -> T where T : Decodable {
+    let data = self.decodeObject(forKey: key) as! Data
+    return T.decode(from: data)
+  }
+}

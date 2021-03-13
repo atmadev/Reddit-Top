@@ -82,7 +82,7 @@ struct ImageResolution: Codable {
   var isPortrait: Bool { height > width }
 }
 
-struct Post {
+struct Post: Codable {
   let id: String
   let title: String
   let created: Date
@@ -91,7 +91,7 @@ struct Post {
   let author: String
   let image: Image?
   
-  struct Image {
+  struct Image: Codable {
     let thumbnail: ImageResolution
     let source: ImageResolution
   }
