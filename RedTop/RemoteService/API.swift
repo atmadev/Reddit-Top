@@ -120,6 +120,7 @@ class API {
   // MARK: Service Methods
   
   func authorize(completed: @escaping () -> Void, failed: @escaping (Error) -> Void) {
+    
     let url = URL(string: "https://ssl.reddit.com/api/v1/access_token")!
     var request = URLRequest(url: url)
     let params = "grant_type=password&username=" + username + "&password=" + password

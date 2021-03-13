@@ -193,7 +193,7 @@
                                     <outlet property="photoView" destination="aIr-Na-Bc8" id="7ru-Du-NF3"/>
                                     <outlet property="subredditLabel" destination="hVJ-0n-x13" id="teA-hc-2wu"/>
                                     <outlet property="titleLabel" destination="V8b-zv-dsO" id="iIN-v1-ChH"/>
-                                    <segue destination="CdZ-Pf-8v1" kind="presentation" identifier="ImageSegue" id="EPf-86-xEL"/>
+                                    <segue destination="CdZ-Pf-8v1" kind="presentation" identifier="ImageSegue" modalPresentationStyle="overCurrentContext" id="EPf-86-xEL"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -309,25 +309,36 @@
                                     <constraint firstItem="fQT-gT-gRL" firstAttribute="leading" secondItem="r5h-wb-9u6" secondAttribute="trailing" constant="10" id="zzQ-XR-P8e"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ITE-jT-SBO" userLabel="BottomDummy">
+                                <rect key="frame" x="0.0" y="896" width="414" height="300"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="300" id="ibk-bV-gAI"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="0sH-Xl-g3J"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstItem="ITE-jT-SBO" firstAttribute="leading" secondItem="pFa-jq-htT" secondAttribute="leading" id="2OT-Ej-Ve0"/>
                             <constraint firstItem="zkM-uU-cqa" firstAttribute="top" secondItem="pFa-jq-htT" secondAttribute="top" id="2q3-XA-zyC"/>
+                            <constraint firstItem="ITE-jT-SBO" firstAttribute="top" secondItem="pFa-jq-htT" secondAttribute="bottom" id="8A5-Vx-JDx"/>
                             <constraint firstAttribute="bottom" secondItem="vZ4-oI-TUe" secondAttribute="bottom" id="Hzu-Sk-bDX"/>
                             <constraint firstItem="vZ4-oI-TUe" firstAttribute="top" secondItem="pFa-jq-htT" secondAttribute="top" id="NN2-RA-LWb"/>
                             <constraint firstItem="zkM-uU-cqa" firstAttribute="bottom" secondItem="mgp-Op-iO8" secondAttribute="bottom" id="Olt-5I-4UZ"/>
-                            <constraint firstItem="mgp-Op-iO8" firstAttribute="top" secondItem="0sH-Xl-g3J" secondAttribute="top" id="Siz-JK-nIE"/>
+                            <constraint firstItem="mgp-Op-iO8" firstAttribute="top" secondItem="pFa-jq-htT" secondAttribute="top" constant="44" id="Siz-JK-nIE"/>
                             <constraint firstAttribute="trailing" secondItem="zkM-uU-cqa" secondAttribute="trailing" id="XFE-rQ-ppB"/>
                             <constraint firstItem="vZ4-oI-TUe" firstAttribute="leading" secondItem="pFa-jq-htT" secondAttribute="leading" id="aH4-0V-FAd"/>
                             <constraint firstItem="vZ4-oI-TUe" firstAttribute="trailing" secondItem="pFa-jq-htT" secondAttribute="trailing" id="bhD-Ug-tfW"/>
                             <constraint firstItem="zkM-uU-cqa" firstAttribute="leading" secondItem="pFa-jq-htT" secondAttribute="leading" id="fWY-Sb-Ufc"/>
+                            <constraint firstAttribute="trailing" secondItem="ITE-jT-SBO" secondAttribute="trailing" id="qN8-RH-1CY"/>
                             <constraint firstItem="0sH-Xl-g3J" firstAttribute="trailing" secondItem="mgp-Op-iO8" secondAttribute="trailing" id="qUb-f1-zh9"/>
                             <constraint firstItem="mgp-Op-iO8" firstAttribute="leading" secondItem="0sH-Xl-g3J" secondAttribute="leading" id="vTh-A9-rVS"/>
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="OUp-aS-kWw" appends="YES" id="xHx-Kd-RMz"/>
+                            <outletCollection property="gestureRecognizers" destination="VBL-z2-Pwp" appends="YES" id="qth-Z1-Ip1"/>
                         </connections>
                     </view>
                     <nil key="simulatedTopBarMetrics"/>
@@ -340,6 +351,7 @@
                         <outlet property="titleLabel" destination="r5h-wb-9u6" id="Cpp-JO-ZKo"/>
                         <outlet property="topBar" destination="mgp-Op-iO8" id="eFs-DV-Ta1"/>
                         <outlet property="topBarBackground" destination="zkM-uU-cqa" id="Fte-2B-exN"/>
+                        <outlet property="topBarTopInset" destination="Siz-JK-nIE" id="PKP-ZB-HwR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E0W-uK-7gE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -349,6 +361,11 @@
                         <action selector="toggleTopBar:" destination="CdZ-Pf-8v1" id="yd5-SI-s81"/>
                     </connections>
                 </tapGestureRecognizer>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="VBL-z2-Pwp">
+                    <connections>
+                        <action selector="handleWithPan:" destination="CdZ-Pf-8v1" id="hhQ-Nx-m3Y"/>
+                    </connections>
+                </panGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="727.5" y="-68.661971830985919"/>
         </scene>

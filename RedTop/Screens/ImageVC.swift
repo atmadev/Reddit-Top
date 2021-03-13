@@ -15,6 +15,7 @@ class ImageVC: UIViewController, UIScrollViewDelegate {
   @IBOutlet var imageViewWidthConstraint: NSLayoutConstraint!
   @IBOutlet var imageViewHeightConstraint: NSLayoutConstraint!
   
+  @IBOutlet var topBarTopInset: NSLayoutConstraint!
   @IBOutlet var topBarBackground: UIView!
   @IBOutlet var topBar: UIView!
   @IBOutlet var saveButton: UIButton!
@@ -31,6 +32,49 @@ class ImageVC: UIViewController, UIScrollViewDelegate {
   required init?(coder aDecoder: NSCoder) { super.init(coder: aDecoder) }
   
   // MARK: View Lifecycle
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    topBarTopInset.constant = UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0
+  }
+  
+  // MARK: Actions
+  
+  @IBAction func handle(pan: UIPanGestureRecognizer) {
+    let window = view!.window
+    let tranlsationY = pan.translation(in: window).y
+    
+    switch pan.state {
+    case .began, .changed:
+      if tranlsationY >= 0 {
+        view.transform = .init(translationX: 0, y: tranlsationY)
+      }
+    case .ended, .cancelled:
+      let velocityY = pan.velocity(in: view?.window).y
+      if velocityY >= 0,
+        (tranlsationY > 100 || velocityY > 700) {
+        dismiss(animated: true, completion: nil)
+      } else {
+        var initialVelocity:CGFloat = 0
+        if velocityY < 0 {
+          let absVelocity = CGFloat(fabsf(Float(velocityY)))
+          initialVelocity = absVelocity < tranlsationY ? absVelocity / tranlsationY : 1
+        }
+        
+        UIView.animate(withDuration: 0.25,
+                       delay: 0,
+                       usingSpringWithDamping: 0.7,
+                       initialSpringVelocity: initialVelocity,
+                       options: []) {
+          self.view.transform = .identity
+        }
+      }
+    case .failed, .possible:
+      break
+    @unknown default:
+      break
+    }
+  }
  
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -116,8 +160,6 @@ class ImageVC: UIViewController, UIScrollViewDelegate {
     super.traitCollectionDidChange(previousTraitCollection)
     updateLayout()
   }
-  
-  override var prefersStatusBarHidden: Bool { true }
   
   //MARK: State preservation
   

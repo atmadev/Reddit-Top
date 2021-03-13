@@ -34,7 +34,7 @@ class TopListVC: UITableViewController {
       API.shared.fetchTop(completed: { (posts, nextAfter) in
         if self.state.posts.count > 0 {
           if posts.count > 0,
-             self.state.posts.first!.id != posts.first!.id {
+            self.state.posts.first!.id != posts.first!.id {
             self.newPosts = posts
             self.showNewPostsButton()
           }
@@ -68,7 +68,9 @@ class TopListVC: UITableViewController {
   
   @objc
   func showNewPosts() {
+    state = State()
     state.posts = newPosts!
+    newPosts = nil
     tableView.reloadData()
     navigationItem.titleView = nil
     tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
@@ -120,6 +122,9 @@ class TopListVC: UITableViewController {
   }
   
   override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    // automaticDimension using triggers unpredictible layout bugs
+    // so, for reliable layout it is better to use oldschool manual cell height calculation
+    
     var height:CGFloat = 10 /*grey area insets*/ + 10 /* top inset */
     height += isHeightCompact ? 17 : 36 /* r/u/ labels stac k*/
     

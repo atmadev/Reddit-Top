@@ -18,6 +18,7 @@ class ImageView: UIImageView {
     if (self.imageResolution?.url == imageResolution?.url) { return }
   
     image = nil
+    self.imageResolution = imageResolution
     guard let resolution = imageResolution else { return }
     
     API.shared.downloadData(at: resolution.url,
