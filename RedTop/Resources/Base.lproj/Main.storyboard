@@ -239,6 +239,9 @@
                                     <outlet property="delegate" destination="CdZ-Pf-8v1" id="1Gg-5P-jfx"/>
                                 </connections>
                             </scrollView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="qvq-cl-gZ7">
+                                <rect key="frame" x="188.5" y="429.5" width="37" height="37"/>
+                            </activityIndicatorView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zkM-uU-cqa">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="88"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="C1j-AD-0k5">
@@ -324,6 +327,7 @@
                             <constraint firstItem="ITE-jT-SBO" firstAttribute="leading" secondItem="pFa-jq-htT" secondAttribute="leading" id="2OT-Ej-Ve0"/>
                             <constraint firstItem="zkM-uU-cqa" firstAttribute="top" secondItem="pFa-jq-htT" secondAttribute="top" id="2q3-XA-zyC"/>
                             <constraint firstItem="ITE-jT-SBO" firstAttribute="top" secondItem="pFa-jq-htT" secondAttribute="bottom" id="8A5-Vx-JDx"/>
+                            <constraint firstItem="qvq-cl-gZ7" firstAttribute="centerY" secondItem="pFa-jq-htT" secondAttribute="centerY" id="FvR-VS-IhR"/>
                             <constraint firstAttribute="bottom" secondItem="vZ4-oI-TUe" secondAttribute="bottom" id="Hzu-Sk-bDX"/>
                             <constraint firstItem="vZ4-oI-TUe" firstAttribute="top" secondItem="pFa-jq-htT" secondAttribute="top" id="NN2-RA-LWb"/>
                             <constraint firstItem="zkM-uU-cqa" firstAttribute="bottom" secondItem="mgp-Op-iO8" secondAttribute="bottom" id="Olt-5I-4UZ"/>
@@ -332,6 +336,7 @@
                             <constraint firstItem="vZ4-oI-TUe" firstAttribute="leading" secondItem="pFa-jq-htT" secondAttribute="leading" id="aH4-0V-FAd"/>
                             <constraint firstItem="vZ4-oI-TUe" firstAttribute="trailing" secondItem="pFa-jq-htT" secondAttribute="trailing" id="bhD-Ug-tfW"/>
                             <constraint firstItem="zkM-uU-cqa" firstAttribute="leading" secondItem="pFa-jq-htT" secondAttribute="leading" id="fWY-Sb-Ufc"/>
+                            <constraint firstItem="qvq-cl-gZ7" firstAttribute="centerX" secondItem="pFa-jq-htT" secondAttribute="centerX" id="iDq-Xc-APg"/>
                             <constraint firstAttribute="trailing" secondItem="ITE-jT-SBO" secondAttribute="trailing" id="qN8-RH-1CY"/>
                             <constraint firstItem="0sH-Xl-g3J" firstAttribute="trailing" secondItem="mgp-Op-iO8" secondAttribute="trailing" id="qUb-f1-zh9"/>
                             <constraint firstItem="mgp-Op-iO8" firstAttribute="leading" secondItem="0sH-Xl-g3J" secondAttribute="leading" id="vTh-A9-rVS"/>
@@ -343,6 +348,7 @@
                     </view>
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
+                        <outlet property="activityIndicator" destination="qvq-cl-gZ7" id="wTH-7g-sMI"/>
                         <outlet property="imageView" destination="UUr-Ed-SPJ" id="Upl-IK-4DH"/>
                         <outlet property="imageViewHeightConstraint" destination="ieI-ni-rlV" id="tkE-zX-Snm"/>
                         <outlet property="imageViewWidthConstraint" destination="suo-6I-VRM" id="DBr-7g-Gh9"/>

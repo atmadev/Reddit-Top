@@ -21,6 +21,8 @@ class ImageVC: UIViewController, UIScrollViewDelegate {
   @IBOutlet var saveButton: UIButton!
   @IBOutlet var titleLabel: UILabel!
   
+  @IBOutlet var activityIndicator: UIActivityIndicatorView!
+  
   var resolution: ImageResolution!
   
   var normalizedWidth:CGFloat = 0
@@ -36,6 +38,25 @@ class ImageVC: UIViewController, UIScrollViewDelegate {
   override func viewDidLoad() {
     super.viewDidLoad()
     topBarTopInset.constant = UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0
+  }
+ 
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    titleLabel.text = title
+  }
+  
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    
+    updateLayout()
+    
+    imageView.set(imageResolution: resolution, completed: {
+      self.saveButton.isEnabled = true
+      self.activityIndicator.stopAnimating()
+    }, failed: { error in
+      self.show(error: error)
+      self.activityIndicator.stopAnimating()
+    })
   }
   
   // MARK: Actions
@@ -75,23 +96,6 @@ class ImageVC: UIViewController, UIScrollViewDelegate {
       break
     }
   }
- 
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-    titleLabel.text = title
-  }
-  
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
-    
-    updateLayout()
-    
-    imageView.set(imageResolution: resolution, completed: {
-      self.saveButton.isEnabled = true
-    }, failed: show(error:))
-  }
-  
-  // MARK: Actions
   
   @IBAction func saveToGallery(_ sender: UIBarButtonItem) {
     guard let image = imageView.image else { return }
