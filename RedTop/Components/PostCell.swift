@@ -17,7 +17,7 @@ class PostCell: UITableViewCell {
   @IBOutlet var photoHeightConstraint: NSLayoutConstraint!
   
   func setPhotoResolution(_ resolution: ImageResolution?) {
-    photoView?.imageResolution = resolution
+    photoView?.set(imageResolution: resolution)
     
     guard let resolution = resolution else {
       photoHeightConstraint.constant = 0

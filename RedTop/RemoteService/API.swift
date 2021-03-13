@@ -21,7 +21,7 @@ class API {
   private let decoder = JSONDecoder()
   private let session = URLSession(configuration: .default)
   private var token: Token!
-  var authorized: Bool { token != nil}
+  var authorized: Bool { token != nil }
   
   private enum Method: String {
     case get = "GET"
@@ -36,61 +36,7 @@ class API {
     decoder.dateDecodingStrategy = .secondsSince1970
   }
   
-  func authorize(completion: @escaping (_ success: Bool) -> Void) {
-    let url = URL(string: "https://ssl.reddit.com/api/v1/access_token")! // TODO: make url constant
-    var request = URLRequest(url: url)
-    let params = "grant_type=password&username=" + username + "&password=" + password
-    request.httpBody = params.data(using: .utf8)
-    
-    let basicAuthenticationChallenge = clientID + ":" + secret
-    
-    guard let data = basicAuthenticationChallenge.data(using: .utf8) else { return }
-      let base64Str = data.base64EncodedString(options: .lineLength64Characters)
-    
-    request.setValue("Basic " + base64Str, forHTTPHeaderField: "Authorization")
-    request.httpMethod = Method.post.rawValue
-    
-    run(request, Token.self) { (token) in
-      self.token = token
-      completion(true)
-    } failed: { (error) in
-      completion(false)
-    }
-  }
-  
-  func downloadData(at url: URL, _ completion: @escaping (_ data: Data) -> Void) {
-    let string = url.absoluteString.replacingOccurrences(of: "&amp;", with: "&")
-    
-    let escapedURL = URL(string: string)!
-    
-    let task = URLSession.shared.downloadTask(with: escapedURL) { location, response, error in
-      
-      if let error = error {
-        self.handleClientError(error)
-        return
-      }
-      
-      guard let httpResponse = response as? HTTPURLResponse,
-            (200...299).contains(httpResponse.statusCode) else {
-        self.handleServerError(response)
-        return
-      }
-      
-      if let location = location {
-        do {
-          let data = try Data(contentsOf:location)
-          
-          DispatchQueue.main.async {
-            completion(data)
-          }
-        }
-        catch {
-          print(error)
-        }
-      }
-    }
-    task.resume()
-  }
+  // MARK: Helpers
   
   private func request(for path: Path, method: Method, params: [String:String]? = nil) -> URLRequest {
     let paramString = params != nil ? ("?" + params!.urlParams) : ""
@@ -108,57 +54,102 @@ class API {
                               completed: @escaping (T) -> Void,
                                  failed: @escaping (Error) -> Void) {
     
+    func handle(_ error: Error) { DispatchQueue.main.async { failed(error) } }
+    
     let task = session.dataTask(with: request) { data, response, error in
-        if let error = error {
-          self.handleClientError(error)
-          DispatchQueue.main.async { failed(error) }
-          return
-        }
+      if let error = error {
+        handle(error)
+        return
+      }
       
-        guard let httpResponse = response as? HTTPURLResponse,
+      guard let httpResponse = response as? HTTPURLResponse,
             (200...299).contains(httpResponse.statusCode) else {
-            self.handleServerError(response)
-          
-          DispatchQueue.main.async { failed(RedError(message: "Bad response")) }
-          return
-        }
+        
+        handle(RedError(message: "Bad response"))
+        return
+      }
       
-        if let mimeType = httpResponse.mimeType, mimeType == "application/json",
-            let data = data {
-          do {
-            let result = try self.decoder.decode(type, from:data)
-            DispatchQueue.main.async { completed(result) }
-            
-          }
-          catch {
-            print(error)
-            DispatchQueue.main.async { failed(error) }
-          }
+      if let mimeType = httpResponse.mimeType,
+         mimeType == "application/json",
+         let data = data {
+        do {
+          let result = try self.decoder.decode(type, from:data)
+          DispatchQueue.main.async { completed(result) }
         }
-        else {
-          DispatchQueue.main.async { failed(RedError(message: "Response is not JSON")) }
-        }
+        catch { handle(error) }
+      }
+      else { handle(RedError(message: "Response is not JSON")) }
     }
     task.resume()
   }
   
-  func handleClientError(_ error: Error) {
-    print("client error \(error)")
+  func downloadData(at url: URL,
+                 completed: @escaping (_ data:  Data)  -> Void,
+                    failed: @escaping (_ error: Error) -> Void) {
+    
+    func handle(_ error: Error) { DispatchQueue.main.async { failed(error) } }
+    
+    let string = url.absoluteString.replacingOccurrences(of: "&amp;", with: "&")
+    
+    let escapedURL = URL(string: string)!
+    
+    let task = URLSession.shared.downloadTask(with: escapedURL) { location, response, error in
+      
+      if let error = error {
+        handle(error)
+        return
+      }
+      
+      guard let httpResponse = response as? HTTPURLResponse,
+            (200...299).contains(httpResponse.statusCode) else {
+        handle(RedError(message: "Bad response"))
+        return
+      }
+      
+      if let location = location {
+        do {
+          let data = try Data(contentsOf:location)
+          DispatchQueue.main.async { completed(data) }
+        }
+        catch { handle(error) }
+      }
+    }
+    task.resume()
   }
   
-  func handleServerError(_ response: URLResponse?) {
-    print("server error \(String(describing: response))")
+  // MARK: Service Methods
+  
+  func authorize(completed: @escaping () -> Void, failed: @escaping (Error) -> Void) {
+    let url = URL(string: "https://ssl.reddit.com/api/v1/access_token")!
+    var request = URLRequest(url: url)
+    let params = "grant_type=password&username=" + username + "&password=" + password
+    request.httpBody = params.data(using: .utf8)
+    
+    let basicAuthenticationChallenge = clientID + ":" + secret
+    
+    guard let data = basicAuthenticationChallenge.data(using: .utf8) else { return }
+      let base64Str = data.base64EncodedString(options: .lineLength64Characters)
+    
+    request.setValue("Basic " + base64Str, forHTTPHeaderField: "Authorization")
+    request.httpMethod = Method.post.rawValue
+    
+    run(request, Token.self, completed: { token in
+      self.token = token
+      completed()
+    }, failed: failed)
   }
   
-  func fetchTop(after: String? = nil, _ completion: @escaping (_ posts: [Post], _ after: String) -> Void) {
+  func fetchTop(after: String? = nil,
+            completed: @escaping (_ posts: [Post], _ after: String) -> Void,
+               failed: @escaping (Error) -> Void) {
+    
     let request = self.request(for: .top, method: .get, params: after != nil ? [ "after": after! ] : nil)
     
-    run(request, Response.self) { (response) in
+    run(request, Response.self, completed: { (response) in
+      
         let posts = response.data.children.map{ Post(from: $0.data) }
-        completion(posts, response.data.after)
-     
-    } failed: { (error) in
-      //TODO: handle error
-    }
+        completed(posts, response.data.after)
+      
+    }, failed: failed)
   }
 }

@@ -79,3 +79,13 @@ extension NSCoder {
     return T.decode(from: data)
   }
 }
+
+extension UIViewController {
+  func show(error: Error) {
+    let alert = UIAlertController(title: "Error",
+                                message: error.localizedDescription,
+                         preferredStyle: .alert)
+    alert.addAction(.init(title: "OK", style: .default, handler: nil))
+    present(alert, animated: true, completion: nil)
+  }
+}

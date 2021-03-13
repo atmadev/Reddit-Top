@@ -21,6 +21,8 @@ class TopListVC: UITableViewController {
   
   var newPosts: [Post]?
   
+  // MARK: View Lifecycle
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     var inset = tableView.contentInset
@@ -28,33 +30,33 @@ class TopListVC: UITableViewController {
     inset.bottom += 5
     tableView.contentInset = inset
     
-    //TODO: add error handling
-    API.shared.authorize { (success) in
-      if success {
-        API.shared.fetchTop() { (posts, nextAfter) in
-          if self.state.posts.count > 0 {
-            if posts.count > 0,
-              self.state.posts.first!.id != posts.first!.id {
-              self.newPosts = posts
-              self.showNewPostsButton()
-            }
-          }
-          else {
-            self.state.posts = posts
-            self.tableView.reloadData()
+    API.shared.authorize(completed: {
+      API.shared.fetchTop(completed: { (posts, nextAfter) in
+        if self.state.posts.count > 0 {
+          if posts.count > 0,
+             self.state.posts.first!.id != posts.first!.id {
+            self.newPosts = posts
+            self.showNewPostsButton()
           }
         }
-       }
-      
+        else {
+          self.state.posts = posts
+          self.tableView.reloadData()
+        }
+      }, failed: self.show(error:))
+     
       self.refreshControl = UIRefreshControl()
       self.refreshControl?.addTarget(self, action: #selector(self.refresh), for: .valueChanged)
-    }
+          
+    }, failed: show(error:))
   }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    self.scrollToRestoredPostIfNeeded()
+    scrollToRestoredPostIfNeeded()
   }
+  
+  // MARK: Actions
 
   func showNewPostsButton() {
     let button = UIButton(type: .system)
@@ -73,7 +75,7 @@ class TopListVC: UITableViewController {
   }
   
   func fetch(after: String? = nil, completion: @escaping () -> Void = {}) {
-    API.shared.fetchTop(after:after) { (posts, nextAfter) in
+    API.shared.fetchTop(after:after, completed: { (posts, nextAfter) in
       if after == nil {
         self.state.posts = posts
       }
@@ -83,7 +85,10 @@ class TopListVC: UITableViewController {
       self.state.after = nextAfter
       self.tableView.reloadData()
       completion()
-    }
+    }, failed: { error in
+      self.show(error: error)
+      completion()
+    })
   }
   
   @objc func refresh() {
@@ -166,26 +171,6 @@ class TopListVC: UITableViewController {
   
   @IBAction func unwindToList(_ unwindSegue: UIStoryboardSegue) {}
   
-  var mostVisibleIndexPath: IndexPath? {
-    if let visibleRows = tableView.indexPathsForVisibleRows,
-       visibleRows.count > 0 {
-      
-      let (_, maxVisibleIndexPath) = visibleRows.reduce((maxHeightValue:0, maxHeightIndexPath:visibleRows.first!)) { (maxHeight, indexPath) -> (CGFloat, IndexPath) in
-        
-        let intersection = self.tableView.rectForRow(at: indexPath).intersection(self.tableView.bounds)
-        
-        if intersection.height > maxHeight.0 {
-          return (intersection.height, indexPath)
-        }
-        return maxHeight
-      }
-      
-      return maxVisibleIndexPath
-    }
-    
-    return nil
-  }
-  
   // MARK: Trait Collections
   var lastVisibleIndexPath: IndexPath?
   
@@ -237,5 +222,25 @@ class TopListVC: UITableViewController {
                             animated: false)
       state.restoredPostID = nil
     }
+  }
+  
+  var mostVisibleIndexPath: IndexPath? {
+    if let visibleRows = tableView.indexPathsForVisibleRows,
+       visibleRows.count > 0 {
+      
+      let (_, maxVisibleIndexPath) = visibleRows.reduce((maxHeightValue:0, maxHeightIndexPath:visibleRows.first!)) { (maxHeight, indexPath) -> (CGFloat, IndexPath) in
+        
+        let intersection = self.tableView.rectForRow(at: indexPath).intersection(self.tableView.bounds)
+        
+        if intersection.height > maxHeight.0 {
+          return (intersection.height, indexPath)
+        }
+        return maxHeight
+      }
+      
+      return maxVisibleIndexPath
+    }
+    
+    return nil
   }
 }
